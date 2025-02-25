@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost in the Box</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            text-align: center;
+            padding: 20px;
+        }
+        #game-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: #0f3460;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .box:hover {
+            background-color: #533483;
+        }
+        .opened {
+            background-color: #e94560;
+        }
+        .ghost {
+            background-color: #00adb5;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        button {
+            background-color: #00adb5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00d4dd;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Ghost in the Box</h1>
+        <div id="grid"></div>
+        <div id="message"></div>
+        <button id="restart" style="display: none;">Play Again</button>
+    </div>
+
+    <script>
+        const gridSize = 16; // 4x4 grid = 16 boxes
+        let ghostIndex = Math.floor(Math.random() * gridSize); // Random ghost location
+        let gameOver = false;
+
+        // Create the game grid
+        function setupGame() {
+            const grid = document.getElementById("grid");
+            grid.innerHTML = ""; // Clear previous grid
+            gameOver = false;
+            ghostIndex = Math.floor(Math.random() * gridSize); // New random ghost location
+            document.getElementById("message").innerText = "Find the ghost!";
+            document.getElementById("restart").style.display = "none";
+
+            for (let i = 0; i < gridSize; i++) {
+                const box = document.createElement("div");
+                box.classList.add("box");
+                box.dataset.index = i;
+                box.innerText = "?";
+                box.onclick = () => openBox(i);
+                grid.appendChild(box);
+            }
+        }
+
+        // Handle box click
+        function openBox(index) {
+            if (gameOver) return; // Ignore clicks if game is over
+
+            const box = document.querySelector(`.box[data-index="${index}"]`);
+            if (box.classList.contains("opened") || box.classList.contains("ghost")) return; // Already opened
+
+            if (index == ghostIndex) {
+                box.classList.add("ghost");
+                box.innerText = "👻"; // Ghost emoji
+                document.getElementById("message").innerText = "You caught the ghost!";
+                gameOver = true;
+                document.getElementById("restart").style.display = "block";
+            } else {
+                box.classList.add("opened");
+                box.innerText = "X"; // Empty box
+            }
+        }
+
+        // Restart the game
+        document.getElementById("restart").onclick = setupGame;
+
+        // Start the game when page loads
+        setupGame();
+    </script>
+</body>
+</html>
